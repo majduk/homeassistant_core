@@ -383,6 +383,8 @@ class DPCode(StrEnum):
     UPPER_TEMP_F = "upper_temp_f"
     UV = "uv"  # UV sterilization
     VA_BATTERY = "va_battery"
+    VALVE = "valve"
+    VALVE_SET = "valve_set"
     VA_HUMIDITY = "va_humidity"
     VA_TEMPERATURE = "va_temperature"
     VOC_STATE = "voc_state"

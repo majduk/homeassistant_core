@@ -16,6 +16,7 @@ from homeassistant.components.climate import (
     ClimateEntityDescription,
     ClimateEntityFeature,
     HVACMode,
+    HVACAction,
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import TEMP_CELSIUS, TEMP_FAHRENHEIT
@@ -192,6 +193,7 @@ class TuyaClimateEntity(TuyaEntity, ClimateEntity):
 
         # Get integer type data for the dpcode to set temperature, use
         # it to define min, max & step temperatures
+        self._attr_supported_features: ClimateEntityFeature = ClimateEntityFeature.TARGET_TEMPERATURE
         if self._set_temperature:
             self._attr_supported_features |= ClimateEntityFeature.TARGET_TEMPERATURE
             self._attr_max_temp = self._set_temperature.max_scaled
@@ -421,6 +423,17 @@ class TuyaClimateEntity(TuyaEntity, ClimateEntity):
             return TUYA_HVAC_TO_HA[mode]
 
         return HVACMode.OFF
+
+    @property
+    def hvac_action(self) -> HVACAction:
+        """Return hvac action."""
+        if self.device.status.get(DPCode.VALVE_SET) == "ForceOpen":
+            return HVACAction.HEATING
+        if self.device.status.get(DPCode.VALVE_SET) == "ForceClose":
+            return HVACAction.IDLE
+        if self.device.status.get(DPCode.VALVE) > 0:
+            return HVACAction.HEATING
+        return HVACAction.IDLE
 
     @property
     def fan_mode(self) -> str | None:
